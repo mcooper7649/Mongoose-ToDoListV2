@@ -60,7 +60,6 @@ Getting Started
     ```
 
 
-
 ### Remove Day Code
 ---
 
@@ -68,3 +67,60 @@ Getting Started
 const date = require(__dirname + "/date.js");
 let day = date.getDay();
 
+
+
+### Create 3 new documents
+---
+
+- Example Mongoose Document
+
+const <constantName> = new <ModelName> ({
+    fieldName: fieldData
+})
+
+```
+const item1 = new Item ({
+    name: "Welcome to your todolist"
+})
+
+const item2 = new Item ({
+    name: "Hit the + button to add a new item."
+})
+
+const item3 = new Item ({
+    name: "<-- Hit this to delete an item."
+})
+
+```
+
+### Lets add these documents to an Array
+---
+
+``const defaultItems = [item1, item2, item3];``
+
+
+
+### Now we can use the insertMany method of mongoose to our items collection
+---
+
+- Example Code for Mongoose insertMany()
+    - Take note we are accessing the singlular, model Item
+
+<ModelName>.insertMany(<documentArray>, function(err){
+    //Deal with error or log success
+})
+
+```
+Item.insertMany(defaultItems, function(err){
+    if (err){
+        console.log(err, "Insert Many Unsuccessful")
+    }else{
+        console.log("Insert Succesful")
+    }
+})
+```
+
+### Now we can test our code
+---
+
+- 
