@@ -221,3 +221,49 @@ app.get("/", function(req, res ){
 })
 
 ```
+
+
+5. Now we need to modify the post route to add a new item to our array.
+    - First lets comment out our app.post work route
+    - Second we remove the app.post "/" code.
+    - Now we need to create a const itemName = req.body.newItem
+    - const item = new Item({
+        name: itemname
+    })
+    - item.save() // shortcut to save to db
+    - go back to mongo shell and type these commannds to confirm it worked.
+        - show dbs
+        - use todolistDB
+        - db.items.find()
+    - Now the item has been saved we can add our res.redirect("/") and it should dispaly our new item in the list.
+
+6. Now we want to delete items when we check the box on the left from our DB.
+    - First lets warp a form around our items in the forEach of the list.ejs
+    - Fix css by modifying form tag by appending .item class
+    - Lets add action and method to our form
+    - We don't want to submit our form we want to delete. So lets chagne the action route to "/delete" and create the post route delete in app.js
+    - We need to add a name so we can tap into it
+        ``<input type="checkbox" name="checkbox" onChange="this.form.submit()">``
+    - This will only submit that the checkbox is on or off, not very useful.
+        - We need to assign the items id to the value of the checkbox
+            value="<%=item._id%>"
+        - Use EJS to accomplish this
+
+
+    7. Now we we can tap into the value of the checkbox and use Mongoose method findByIdAndRemove
+
+    ```
+    app.post("/delete", function(req, res){
+    const checkItemId = req.body.checkbox
+    Item.findByIdAndRemove(checkItemId, function(err){
+        if (err){
+            console.log("Unsuccessful")
+        } else {
+            console.log("Sucessfully Deleted")
+        }
+    })
+    })
+
+    ```
+
+    - Make sure to do error handlinga as mongoose doc specify it won't delete if you don't.
