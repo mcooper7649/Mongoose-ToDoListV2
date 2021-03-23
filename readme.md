@@ -267,3 +267,91 @@ app.get("/", function(req, res ){
     ```
 
     - Make sure to do error handlinga as mongoose doc specify it won't delete if you don't.
+
+###
+---
+Express Route Paramenters
+
+For this module we want the routes to be dynamic instead of static. So if someone types localhost:3000/home or work or anyting a page loads
+
+
+- Lets start by removing the hardcoded routes.
+- Next lets readd the get route with customListName as the variable
+- You can confirm it worked by typing a test route into the address bar and confirming from shell it worked.
+
+
+
+    ```
+    app.get("/:customListName", function(req, res){
+    console.log(req.params.customListName)
+    })
+    ```
+
+- Next we need to create new listSchema that will be displayed on ever page, with a name and items property. The items property will have the itemsSchem array.
+
+```
+const listSchema = {
+    name: String,
+    items: [itemsSchema]
+};
+
+```
+
+- Now we can crate another Model, named list and tap into the listSchema we just created.
+
+```
+const List = mongoose.model("List", listSchema);
+
+```
+
+- Now we add to the customListName app.get our dynamic name and default items as the property values and save the list
+    - show collections from shell to see items, lists
+    - db.lists.find() // to reveal our lists
+
+
+```
+
+app.get("/:customListName", function(req, res){
+
+    const customListName = req.params.customListName;
+
+    const list = new List ({
+        name: customListName,
+        items: defaultItems
+    })
+    list.save();
+})
+
+
+```
+
+1. Using Mongoose findOne() method lets see if our list name exists or not, if it does we just need to log exists or doesn't
+    - findOne will always return a single object and not an array unlike the normal find(). 
+
+```
+List.findOne({name: customListName}, function(err, foundList){
+        if (!err){
+            if(!foundList){
+                //Create a new list
+                const list = new List ({
+                    name: customListName,
+                    items: defaultItems
+                })
+                list.save();
+                res.redirect("/" + customListName)
+            } else {
+                //Show an existing list
+                res.render("list", {
+                    listTitle: foundList.name,
+                    newListItems: foundList.items
+                })
+            }
+        }
+    })
+
+```
+
+2. Create now the custom List name is displayed and the page routes load correct but we can't add new items to the custom lists.
+    - If you look at the lists.ejs page, when we press the + button we are always posting to the "/" route. 
+    - We need to figure out how to pass the listTitle when the form is triggered
+    - Using the button is a perfect place to do this by adding a new value, the same way we did earlier with the EJS tags.
