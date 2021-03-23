@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 
-mongoose.connect("mongodb://localhost:27017/todolistDB", {useNewUrlParser: true})
+mongoose.connect("mongodb://localhost:27017/todolistDB", {useNewUrlParser: true, useUnifiedTopology: true })
 
 
 const itemsSchema = {
@@ -41,22 +41,27 @@ const item3 = new Item ({
 
 const defaultItems = [item1, item2, item3];
 
-Item.insertMany(defaultItems, function(err){
-    if (err){
-        console.log(err, "Insert Many Unsuccessful")
-    }else{
-        console.log("Insert Succesful")
-    }
+
+
+app.get("/", function(req, res ){
+   Item.find({}, function(err, foundItems){
+       if(foundItems.length === 0){
+           Item.insertMany(defaultItems, function(err){
+               if (err){
+                   console.log(err);
+               } else {
+                   console.log("Successfully saved default items to DB");
+               }
+           })
+           res.redirect("/")
+       } else {
+        res.render("list", {
+            listTitle: "Today",
+            newListItems: foundItems
+        });
+       }
+   })
 })
-
-app.get("/", function (req, res ){
-   
-
-    res.render("list", {
-        listTitle: "Today",
-        newListItems: items
-    });
-});
 
 app.get("/work", function(req, res){
     res.render("list", {

@@ -123,4 +123,101 @@ Item.insertMany(defaultItems, function(err){
 ### Now we can test our code
 ---
 
-- 
+1. show dbs from the mongo shell
+
+2. use todolistDB
+
+3. show collections // Should show items collection
+
+4. db.items.find() // This will find all items 
+
+
+
+### How do we add find from the app.js?
+---
+
+1. We can use the find() method on our Item
+    - Item.find({}, function(err, foundItems){
+        if (err){
+            console.log("Error")
+        } else {
+            console.log("Success)
+        }
+    }) 
+    - This is a find all with data validation and the returned variable, foundItems in this case, you can be a relative var.
+
+
+2. We also need to update the app.get with foundItems instead of our old deleted array items.
+    - change items to foundItems
+    - lets move our res.render into the callback
+
+3. Our Items are loading now but the entire document is being rendered for each list item
+    - We only need the name field to be displayed
+    - We can access the list.ejs file
+        - lets modify newListItem[i] to have .name added.
+    - Lets update our for loop to the newer ES6 forEach()
+
+```
+<%  newListItems.forEach(function(item){ %>
+        <div class="item">
+            <input type="checkbox" name="" id="">
+            <p><%= item.name %></p>
+        </div>
+        <% }) %>
+```
+
+
+4. Everytime we run our App.js we re-insert our array. 
+    - We can't comment out code so easily of an application while its remotely hosted so we need to add an if statement
+    ```
+    Item.find({}, function(err, foundItems){
+        if (err){
+            console.log("Error")
+        } else {
+            if(foundItems.length === 0){
+                Item.insertMany(defaultItems, function(err){
+                    if (err){
+                        console.log(err, "Insert Many Unsuccessful")
+                    }else{
+                        console.log("Insert Succesful")
+                    }
+                })
+            }
+
+            res.render("list", {
+                listTitle: "Today",
+                newListItems: foundItems
+            });
+        }})
+});
+    ```
+
+
+    
+    - Lets first drop aka delete our todolist db and to so we can re-insert with the if statement.
+        - db  from shell to show what db your connected to
+        - db.dropDatabase() from shell deletes
+
+    
+```
+app.get("/", function(req, res ){
+   Item.find({}, function(err, foundItems){
+       if(foundItems.length === 0){
+           Item.insertMany(defaultItems, function(err){
+               if (err){
+                   console.log(err);
+               } else {
+                   console.log("Successfully saved default items to DB");
+               }
+           })
+           res.redirect("/")
+       } else {
+        res.render("list", {
+            listTitle: "Today",
+            newListItems: foundItems
+        });
+       }
+   })
+})
+
+```
