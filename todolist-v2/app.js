@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 
-mongoose.connect("mongodb://localhost:27017/todolistDB", {useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect("mongodb+srv://admin-mike:9NMCTko4NoWXtfcw@mycluster1.ewevp.mongodb.net/todolistDB", {useNewUrlParser: true, useUnifiedTopology: true })
 
 
 const itemsSchema = {
@@ -150,7 +150,13 @@ app.post("/delete", function(req, res){
 //     res.redirect("/work")
 // });
     
+let port = process.env.PORT;
+if(port == null || port == ""){
+    port = 3000;
+}
 
-app.listen(3000, function(){
-    console.log("Server started on port 3000");
+
+
+app.listen(port, function(){
+    console.log("Server started Successfully");
 })
